@@ -17,7 +17,7 @@ def get_args():
 
     # Model choice
     parser.add_argument("--model_architecture", type=str, default="Informer", choices=["LSTM", "Transformer", "Informer"])
-    parser.add_argument("--inp", type=str, default="FTLE", choices=["FTLE", "Fourier", "FTLE_Fourier"])
+    parser.add_argument("--inp", type=str, default="FTLE", choices=["FTLE", "Fourier"])
 
     # FTLE params
     parser.add_argument("--K",       type=int, default=100)
