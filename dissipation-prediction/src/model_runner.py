@@ -24,9 +24,11 @@ def save_config(args, save_dir):
     print(f"[INFO] Configuration saved to {config_path}")
     
     
+    
+    
 def run_model(
     args,
-    X,
+    no_inputs,
     y_train_norm,
     train_loader,
     val_loader,
@@ -40,9 +42,9 @@ def run_model(
 ):
     preds, trues = None, None
     
-    print(" # ========================================== # ")
-    print(f" [INFO] Call the {args.model_architecture} model ")
-    print(" # ========================================== # \n")
+    print("\n # ================================================== # ")
+    print(f"      [INFO] {args.model_architecture} Architecture     ")
+    print(" # ================================================== # ")
 
     # -------------------------------------------------
     # Experiment directories
@@ -58,12 +60,12 @@ def run_model(
     save_dir = os.path.join(
         args.directory_outputs,
         f"tau_{args.tau}",
-        settings
+        f"{args.inp}"   # Alternatively, you can save the file as settings
     )
 
     model_save_dir = os.path.join(save_dir, "checkpoints")
     results_path   = os.path.join(save_dir, "results")
-    model_name     = "InformerForecast.pth"
+    model_name     = "model.pth"    #"InformerForecast.pth"
 
     os.makedirs(model_save_dir, exist_ok=True)
     os.makedirs(results_path, exist_ok=True)
@@ -74,7 +76,7 @@ def run_model(
     # Build model
     # -------------------------------------------------
     model = Informer(
-        enc_in=X.shape[-1],
+        enc_in=no_inputs, #X.shape[-1],
         dec_in=1,
         c_out=1,
         seq_len=m,
@@ -97,9 +99,9 @@ def run_model(
         device=device
     ).to(device)
 
-    print("\n --- Model Architecture ----")
-    print(model)
-    print("===================================\n")
+    #print("\n --- Model Architecture ----")
+    #print(model)
+    #print("===================================\n")
 
     # -------------------------------------------------
     # Trainer
@@ -123,9 +125,9 @@ def run_model(
     # Training
     # -------------------------------------------------
     if args.train_model:
-        print(" # ============================== # ")
+        print("\n # ============================================ # ")
         print(f" [INFO] Training {args.model_architecture} model ")
-        print(" # ============================== # \n")
+        print(" # ========================================== # \n")
 
         use_amp = args.use_amp.lower() == "true"
 
@@ -140,15 +142,17 @@ def run_model(
             use_amp=use_amp
         )
     else:
-        print("\n[INFO] The model is already trained.")
+        print("\n # ============================= # ")
+        print("     [INFO] The model is trained.    ")
+        print(" # ============================= # ")
 
     # -------------------------------------------------
     # Prediction
     # -------------------------------------------------
     if args.predict_model:
-        print(" # =================== # ")
-        print(" [INFO] Prediction ")
-        print(" # =================== # \n")
+        print("\n # ============================== # ")
+        print("    [INFO] Prediction on test data   ")
+        print(" # =============================== # ")
 
         predictor = Predict(
             model=model,
@@ -167,5 +171,12 @@ def run_model(
         # Inverse normalization
         _, preds = normalizer.inverse_transform(yn=preds)
         _, trues = normalizer.inverse_transform(yn=trues)
+        
+        print("\n # ============================ # ")
+        print(f" [INFO] Plot the prediction .... ")
+        print(" # ============================ # \n")
+
+        k_list = [h - 1] #[0, int(0.5 * h) - 1, int(0.75 * h) - 1, h - 1]
+        predictor.plot(k_list, DT)
 
     return preds, trues

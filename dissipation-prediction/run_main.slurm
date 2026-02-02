@@ -16,11 +16,19 @@ nvidia-smi --query-gpu=name,memory.total --format=csv
 
 echo ">>> Running job $SLURM_ARRAY_TASK_ID"
 
+
+tau=15
+lookback=$((4 * tau))
+label=$((2 * tau))
+
+
+
 srun python -u main.py \
-    --model_architecture Informer \
+    --model_architecture Transformer-based \
     --inp FTLE \
-    --tau 10 \
-    --lookback 40 \
-    --predict_model
+    --tau "$tau" \
+    --lookback "$lookback" \
+    --label "$label" 
+    #--predict_model
 
 
