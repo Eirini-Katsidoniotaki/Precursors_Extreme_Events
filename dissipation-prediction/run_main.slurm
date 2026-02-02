@@ -29,6 +29,6 @@ srun python -u main.py \
     --tau "$tau" \
     --lookback "$lookback" \
     --label "$label" 
-    #--predict_model
+    --predict_model
 
 

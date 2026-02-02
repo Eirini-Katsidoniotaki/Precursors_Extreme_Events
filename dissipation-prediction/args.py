@@ -65,9 +65,5 @@ def get_args():
     
     # Prediction control
     parser.add_argument("--predict_model", action="store_true", help="If set, run prediction/validation after training.")
-                        
-    # For metrics:
-    # Extreme classification threshold
-    parser.add_argument("--extreme_thres", type=float, default=0.17, help="Threshold for defining extreme events")
     
     return parser.parse_args()
